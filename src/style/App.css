@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root {
+  --primary-color: #3674b5;
+  --secondary-color: #578fca;
+  --bg-primary: #181818;
+  --bg-secondary: #1C1C1C;
+  --bg-one: rgba(255, 255, 255, 0.6);
+  --bg-two: rgba(255, 255, 255, 0.4);
+  --bg-three: rgba(255, 255, 255, 0.03);
+}
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+.notes-container {
+  min-height: 100vh;
+}
+
+.bg-primary {
+  background-color: var(--bg-primary) !important;
+}
+
+.icon {
+  color: #FFFFFF;
+  font-family: 'Crimson Pro' !important;
+  cursor: pointer;
+}
+
+.icon:hover {
+  color: #FFFFFF;
+}
+
+.header {
+  color: var(--primary-color);
+  font-family: 'Crimson Pro' !important;
+  font-size: 4rem;
+}
+
+.subtitle {
+  color: var(--secondary-color);
+  font-family: 'Crimson Pro' !important;
+  font-size: 2rem;
+}
+
+.logout-link {
+  color: var(--primary-color);
+}
+
+.logout-link:hover,
+.logout-link:focus,
+.logout-link:active {
+  color: #2e6197;
+}
+
+.btn.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:active,
+.btn.btn-primary:focus,
+.btn.btn-primary:focus-visible,
+.btn.btn-primary:focus:not(:active),
+.btn.btn-primary.active {
+  background-color: #2e6197 !important;
+  border-color: #2e6197 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.btn.btn-secondary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn.btn-secondary:hover,
+.btn.btn-secondary:active,
+.btn.btn-secondary:focus,
+.btn.btn-secondary:focus-visible,
+.btn.btn-secondary:focus:not(:active),
+.btn.btn-secondary.active {
+  background-color: #4876a8 !important;
+  border-color: #4876a8 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.tags::before {
+  content: ' #';
+}
