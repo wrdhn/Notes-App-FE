@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -15,6 +16,8 @@ const NOTES_ACTIONS = {
   SET_NOTE_BY_ID: 'SET_NOTE_BY_ID',
   SEARCH_QUERY: 'SEARCH_QUERY',
   NEW_NOTE: 'NEW_NOTE',
+  UPDATE_NOTE: 'UPDATE_NOTE',
+  DELETE_NOTE: 'DELETE_NOTE',
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
 }
@@ -45,7 +48,26 @@ function notesReducer(state, action) {
     case NOTES_ACTIONS.SEARCH_QUERY:
       return { ...state, searchQuery: action.payload }
     case NOTES_ACTIONS.NEW_NOTE:
-      return { ...state, notes: action.payload.response.data.newNote }
+      return {
+        ...state,
+        notes: [...state.notes, action.payload.response.data.newNote],
+        loading: false,
+        error: null,
+      }
+    case NOTES_ACTIONS.UPDATE_NOTE:
+      return {
+        ...state,
+        notes: action.payload,
+        loading: false,
+        error: null,
+      }
+    case NOTES_ACTIONS.DELETE_NOTE:
+      return {
+        ...state,
+        notes: action.payload,
+        loading: false,
+        error: null,
+      }
     case NOTES_ACTIONS.SET_LOADING:
       return { ...state, loading: action.payload }
     case NOTES_ACTIONS.SET_ERROR:
@@ -100,7 +122,7 @@ export function NotesProvider({ children }) {
     getNotes()
   }, [])
 
-  const getNotes = async () => {
+  const getNotes = useCallback(async () => {
     try {
       dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: true })
 
@@ -115,13 +137,13 @@ export function NotesProvider({ children }) {
     } catch (error) {
       dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: error.message })
     }
-  }
+  }, [])
 
   const searchNote = query => {
     dispatch({ type: NOTES_ACTIONS.SEARCH_QUERY, payload: query })
   }
 
-  const getNoteById = async id => {
+  const getNoteById = useCallback(async id => {
     try {
       dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: true })
 
@@ -129,62 +151,81 @@ export function NotesProvider({ children }) {
 
       if (result.success) {
         dispatch({ type: NOTES_ACTIONS.SET_NOTE_BY_ID, payload: result })
-        console.info('Get Note by ID Success', state.notes)
+        console.info('Get Note by ID Success')
       } else {
         dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: result.error })
       }
     } catch (error) {
       dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: error.message })
     }
-  }
+  }, [])
 
-  const addNote = async newNote => {
+  const addNote = useCallback(async newNote => {
     try {
       dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: true })
 
       const result = await NotesService.postNote(newNote)
       if (result.success) {
         dispatch({ type: NOTES_ACTIONS.NEW_NOTE, payload: result })
-        console.info('Add Note Success', state.notes)
+        console.info('Add Note Success')
       } else {
         dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: result.error })
       }
     } catch (error) {
       dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: error.message })
     }
-  }
+  }, [])
 
-  const editNote = async (id, data) => {
-    try {
-      dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: true })
+  const editNote = useCallback(
+    async (id, data) => {
+      try {
+        dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: true })
 
-      const result = await NotesService.putNote(id, data)
+        console.info('updatedNote', data)
+        const result = await NotesService.putNote(id, data)
 
-      if (result.success) {
-        dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: false })
-      } else {
-        dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: result.error })
+        if (result.success) {
+          const updatedNote = state.notes.map(note => {
+            return note.id === id ? { ...note, ...data } : note
+          })
+          dispatch({
+            type: NOTES_ACTIONS.UPDATE_NOTE,
+            payload: updatedNote,
+          })
+          console.info('edit note success')
+        } else {
+          dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: result.error })
+        }
+      } catch (error) {
+        dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: error.message })
       }
-    } catch (error) {
-      dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: error.message })
-    }
-  }
+    },
+    [state.notes]
+  )
 
-  const deleteNote = async id => {
-    try {
-      dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: true })
+  const deleteNote = useCallback(
+    async id => {
+      try {
+        dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: true })
 
-      const result = await NotesService.removeNote(id)
+        const result = await NotesService.removeNote(id)
 
-      if (result.success) {
-        dispatch({ type: NOTES_ACTIONS.SET_LOADING, payload: false })
-      } else {
-        dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: result.error })
+        if (result.success) {
+          const newNote = state.notes.filter(note => note.id !== id)
+          dispatch({
+            type: NOTES_ACTIONS.DELETE_NOTE,
+            payload: newNote,
+          })
+          console.info('delete note success')
+        } else {
+          dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: result.error })
+        }
+      } catch (error) {
+        dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: error.message })
       }
-    } catch (error) {
-      dispatch({ type: NOTES_ACTIONS.SET_ERROR, payload: error.message })
-    }
-  }
+    },
+    [state.notes]
+  )
 
   const value = {
     ...state,

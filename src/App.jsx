@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { NotesProvider } from './context/NotesContext'
 import Header from './common/Header'
-import AddNote from './components/AddNote'
 import Dashboard from './components/Dashboard'
+import NoteDetail from './components/NoteDetail'
+import NoteList from './components/NoteList'
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
             <Header />
             <Routes>
               <Route path='/' element={<Dashboard />} />
-              <Route path='/addNote' element={<AddNote />} />
+              <Route path='note-list' element={<NoteList />} />
+              <Route path='note-detail/:id' element={<NoteDetail />} />
             </Routes>
           </div>
         </NotesProvider>
