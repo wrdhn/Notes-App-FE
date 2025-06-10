@@ -85,7 +85,7 @@ function NoteDetail() {
   }
 
   const handleclose = () => {
-    navigate('/')
+    navigate(-1)
     console.log('navigate to dashboard')
   }
 
